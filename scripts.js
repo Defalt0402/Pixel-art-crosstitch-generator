@@ -6,6 +6,7 @@ let initialImageHeight = 0;
 document.addEventListener("DOMContentLoaded", function () {
   const imageUpload = document.getElementById('imageUpload');
   const slider = document.getElementById('slider');
+  const colourSlider = document.getElementById('ColourSlider');
   const poolingType = document.getElementById('poolingType');
 
   const uploadedImage = document.getElementById('uploadedImage');
@@ -53,25 +54,32 @@ document.addEventListener("DOMContentLoaded", function () {
     updateDisplay();
   });
 
+  // Listener for slider
+  colourSlider.addEventListener('input', function () {
+    document.getElementById('colourSliderValue').textContent = colourSlider.value;
+    updateDisplay();
+  });
+
   // Listener for pooling type change
   poolingType.addEventListener('change', function () {
     updateDisplay();
   });
 
     function updateDisplay() {
-        const kernelSize = parseInt(slider.value);
-        const poolingValue = poolingType.value;
+      const kernelSize = parseInt(slider.value);
+      const poolingValue = poolingType.value;
+      const quantiseEnabled = document.getElementById('Quantise').value === 'yes'; // 'mean' means quantise here
+      const quantiseLevels = parseInt(colourSlider.value);
 
-        // Get canavs to draw to
-        const canvas = document.getElementById('hiddenCanvas');
-        const ctx = canvas.getContext('2d');
+      const canvas = document.getElementById('hiddenCanvas');
+      const ctx = canvas.getContext('2d');
 
-        canvas.width = uploadedImage.naturalWidth;
-        canvas.height = uploadedImage.naturalHeight;
-        ctx.drawImage(uploadedImage, 0, 0);
+      canvas.width = uploadedImage.naturalWidth;
+      canvas.height = uploadedImage.naturalHeight;
+      ctx.drawImage(uploadedImage, 0, 0);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const { data, width, height } = imageData;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data, width, height } = imageData;
 
         // Loop over all pixels in image, ensuring pixels are processed in blocks of kernelSize
         for (let y = 0; y < height; y += kernelSize) {
@@ -143,10 +151,25 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        if (quantiseEnabled && quantiseLevels > 1) {
+          // Quantise each pixel's R,G,B based on slider value
+          for (let i = 0; i < data.length; i += 4) {
+            data[i] = quantiseValue(data[i], quantiseLevels);
+            data[i + 1] = quantiseValue(data[i + 1], quantiseLevels);
+            data[i + 2] = quantiseValue(data[i + 2], quantiseLevels);
+          }
+        }
+
         ctx.putImageData(imageData, 0, 0);
         copiedImage.src = canvas.toDataURL();
     }
 
+
+    // Function to quantise a value to the nearest level
+    function quantiseValue(value, levels) {
+      const step = 255 / (levels - 1);
+      return Math.round(value / step) * step;
+    }
 
 
 });
