@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pixel Art Cross-Stitch Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="scripts.js"></script>
+</head>
+<body>
+    <h1>Pixel Art Cross-Stitch Generator</h1>
+    <form>
+        <div class="form-group">
+            <label for="imageUpload">Upload Image:</label>
+            <input type="file" id="imageUpload" accept="image/*">
+        </div>
+        <div class="form-group">
+            <span id="imageWidth"></span>
+            <span id="imageHeight"></span>
+        </div>
+        <div id="imagePreviewContainer" style="display: flex; gap: 20px; margin-top: 20px;">
+            <img id="uploadedImage" src="" alt="Original image" style="max-width: 500px; display: none;">
+            <img id="copiedImage" src="" alt="Copy of image" style="max-width: 500px; display: none;">
+            <canvas id="hiddenCanvas" style="display: none;"></canvas>
+        </div>
+        <div class="form-group">
+            <label for="slider">Adjust Kernel Size:</label>
+            <input type="range" id="slider" min="1" max="100" value="2">
+            <span id="sliderValue">2</span>
+        </div>
+        <div class="form-group">
+            <label for="dropdown">Pooling Mode:</label>
+            <select id="poolingType">
+                <option value="mean">Mean Pooling</option>
+                <option value="max">Max Pooling</option>
+                <option value="min">Min Pooling</option>
+            </select>
+        </div>
+    </form>
+</body>
+</html>
